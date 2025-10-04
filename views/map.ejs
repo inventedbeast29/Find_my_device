@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracker</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+ <style>
+     #map{
+        top: 20%;
+        left: 2vw;
+height: 90vh;
+width: 95vw;
+border: 3px solid black !important;
+box-shadow: 2px 2px 2px 2px;
+     }
+     </style>
+     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<body>
+    <div id="map"></div>
+</body>  
+    
+<script  src="/socket.io/socket.io.js"></script>
+<script>
+
+let map;
+let marker;
+window.addEventListener("load",()=>{
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(success, error);
+  } 
+}
+
+function success(position) {
+ 
+    let latitude=position.coords.latitude;
+    let longitude=position.coords.longitude;
+ 
+ console.log("Latitude",latitude +"Longitude",longitude)
+ if(!map){
+var map = L.map('map').setView([latitude, longitude], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+}
+var marker = L.marker([latitude, longitude]).addTo(map);
+}
+
+function error() {
+  alert("Sorry, no position available.");
+}
+    getLocation();
+})
+
+    const socket=io(); 
+</script>
+</html>
