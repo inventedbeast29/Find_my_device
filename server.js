@@ -20,7 +20,7 @@ io.on("connection",(socket)=>{
     console.log("Device connected",socket.id);
     socket.on("position",(data)=>{
        const {latitude,longitude}=data;
-        io.emit("pos",{latitude,longitude});
+        socket.broadcast.emit("pos", { latitude, longitude });
     })
 })
 

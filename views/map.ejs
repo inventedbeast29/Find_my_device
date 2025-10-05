@@ -59,7 +59,7 @@ if (!myMarker) {
 } else {
   myMarker.setLatLng([latitude, longitude]).bindPopup("You").openPopup();
 }
- socket.broadcast.emit("position",{latitude,longitude});
+ socket.emit("position",{latitude,longitude});
  }, 
 
  (err)=>{
