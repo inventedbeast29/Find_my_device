@@ -18,7 +18,10 @@ app.get("/",(req,res)=>{
 
 io.on("connection",(socket)=>{
     console.log("Device connected",socket.id);
-    
+    socket.on("position",(data)=>{
+       const {latitude,longitude}=data;
+        io.emit("pos",{latitude,longitude});
+    })
 })
 
 Server.listen("1111",()=>{

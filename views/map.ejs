@@ -13,11 +13,11 @@
 </head>
  <style>
      #map{
-        top: 20%;
+        margin-top: 2%;
         left: 2vw;
 height: 90vh;
 width: 95vw;
-border: 3px solid black !important;
+border: 3px solid white !important;
 box-shadow: 2px 2px 2px 2px;
      }
      </style>
@@ -32,38 +32,52 @@ box-shadow: 2px 2px 2px 2px;
     
 <script  src="/socket.io/socket.io.js"></script>
 <script>
-
+const socket=io(); 
 let map;
-let marker;
-window.addEventListener("load",()=>{
-function getLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(success, error);
-  } 
-}
+let myMarker;
+let otherMarker
 
-function success(position) {
- 
-    let latitude=position.coords.latitude;
-    let longitude=position.coords.longitude;
- 
- console.log("Latitude",latitude +"Longitude",longitude)
- if(!map){
-var map = L.map('map').setView([latitude, longitude], 13);
+
+window.addEventListener("load",()=>{
+
+  if (navigator.geolocation) {
+    navigator.geolocation.watchPosition((pos)=>{
+      const latitude=pos.coords.latitude;
+      const longitude=pos.coords.longitude;
+
+    console.log(latitude,longitude)
+    if(!map){
+     map = L.map('map').setView([latitude, longitude], 13);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
-}
-var marker = L.marker([latitude, longitude]).addTo(map);
-}
+    }
 
-function error() {
-  alert("Sorry, no position available.");
+if (!myMarker) {
+  myMarker = L.marker([latitude, longitude]).addTo(map).bindPopup("You").openPopup();
+} else {
+  myMarker.setLatLng([latitude, longitude]).openPopup();
 }
-    getLocation();
+ socket.emit("position",{latitude,longitude});
+ }, 
+
+ (err)=>{
+  console.log(err.message)
+ }
+ ,{ enableHighAccuracy: true, maximumAge: 0, timeout: 2000 }
+)
+}})
+
+socket.on("pos",(data)=>{
+  if(!otherMarker){
+ otherMarker=L.marker([data.latitude,data.longitude]).addTo(map).bindPopup("Other").openPopup();}
+ else{
+otherMarker.setLatLng([data.latitude,data.longitude]).openPopup()
+ }
+ console.log("Updated lat",data.latitude,data.longitude)
 })
 
-    const socket=io(); 
+   
 </script>
 </html>
