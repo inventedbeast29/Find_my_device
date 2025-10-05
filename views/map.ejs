@@ -45,7 +45,7 @@ window.addEventListener("load",()=>{
       const latitude=pos.coords.latitude;
       const longitude=pos.coords.longitude;
 
-    console.log(latitude,longitude)
+   // console.log("Location",latitude,longitude)
     if(!map){
      map = L.map('map').setView([latitude, longitude], 13);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
