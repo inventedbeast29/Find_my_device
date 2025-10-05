@@ -57,9 +57,9 @@ window.addEventListener("load",()=>{
 if (!myMarker) {
   myMarker = L.marker([latitude, longitude]).addTo(map).bindPopup("You").openPopup();
 } else {
-  myMarker.setLatLng([latitude, longitude]).openPopup();
+  myMarker.setLatLng([latitude, longitude]).bindPopup("You").openPopup();
 }
- socket.emit("position",{latitude,longitude});
+ socket.broadcast.emit("position",{latitude,longitude});
  }, 
 
  (err)=>{
@@ -73,7 +73,7 @@ socket.on("pos",(data)=>{
   if(!otherMarker){
  otherMarker=L.marker([data.latitude,data.longitude]).addTo(map).bindPopup("Other").openPopup();}
  else{
-otherMarker.setLatLng([data.latitude,data.longitude]).openPopup()
+otherMarker.setLatLng([data.latitude,data.longitude]).bindPopup("Other").openPopup()
  }
  console.log("Updated lat",data.latitude,data.longitude)
 })
