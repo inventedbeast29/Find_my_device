@@ -21,22 +21,24 @@ border: 3px solid white !important;
 box-shadow: 2px 2px 2px 2px;
      }
      </style>
+
+<body>
+    <div id="map"></div>
+
      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
      crossorigin=""></script>
      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+ 
 
-<body>
-    <div id="map"></div>
-</body>  
-    
+ 
 <script  src="/socket.io/socket.io.js"></script>
 <script>
 const socket=io(); 
 let map;
 let myMarker;
 let otherMarker
-
+const fence={latitude:28.44654213710573,longitude:77.07210118837843}      
 
 window.addEventListener("load",()=>{
 
@@ -44,8 +46,7 @@ window.addEventListener("load",()=>{
     navigator.geolocation.watchPosition((pos)=>{
       const latitude=pos.coords.latitude;
       const longitude=pos.coords.longitude;
-
-   // console.log("Location",latitude,longitude)
+     
     if(!map){
      map = L.map('map').setView([latitude, longitude], 13);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -54,12 +55,22 @@ window.addEventListener("load",()=>{
 }).addTo(map);
     }
 
+    const fenceCircle = L.circle([fence.latitude, fence.longitude], {
+  color: "red",           
+  fillColor:"blue",    
+  fillOpacity: 0.1,        
+  radius: 1000            
+}).addTo(map);
+
+
 if (!myMarker) {
   myMarker = L.marker([latitude, longitude]).addTo(map).bindPopup("You").openPopup();
+  console.log(latitude,longitude)
 } else {
   myMarker.setLatLng([latitude, longitude]).bindPopup("You").openPopup();
 }
  socket.emit("position",{latitude,longitude});
+
  }, 
 
  (err)=>{
@@ -67,7 +78,8 @@ if (!myMarker) {
  }
  ,{ enableHighAccuracy: true, maximumAge: 0, timeout: 2000 }
 )
-}})
+}
+})
 
 socket.on("pos",(data)=>{
   if(!otherMarker){
@@ -75,9 +87,15 @@ socket.on("pos",(data)=>{
  else{
 otherMarker.setLatLng([data.latitude,data.longitude]).bindPopup("Other").openPopup()
  }
- console.log("Updated lat",data.latitude,data.longitude)
+ console.log("Updated lat",data.latitude,data.longitude);
+
+ if(data.inside){
+  alert("You are inside the boundary");
+ }
 })
+
 
    
 </script>
+</body> 
 </html>
